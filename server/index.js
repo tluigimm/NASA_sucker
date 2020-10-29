@@ -34,12 +34,13 @@ app.get("/login", (req, res) => {
 app.post('/send_date', async (req, res) => {
     try{
         const d = req.body.d;
-        const url = `https://api.nasa.gov/planetary/apod?date=${d}&api_key=${API_KEY}`;
+        const urlApod = `https://api.nasa.gov/planetary/apod?date=${d}&api_key=${API_KEY}`;
+        const urlNeows = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${d}&end_date=${d}&api_key=${API_KEY}`;
         const options = {
             "method": "GET",
         };
 
-        const respond = await fetch(url, options)
+        const responseApod = await fetch(urlApod, options)
             .then(res => res.json())
             .catch(e => {
               console.error({
@@ -47,8 +48,22 @@ app.post('/send_date', async (req, res) => {
                  error: e,
               });
             });
-        console.log("RESPONSE: ", response)
-        res.json(res);
+
+        const responseNeows = await fetch(urlNeows, options)
+            .then(res => res.json())
+            .catch(e => {
+              console.error({
+                "message": ":(",
+                 error: e,
+              });
+            });
+        console.log("RESPONSE APOD: ", responseApod);
+        console.log("--------------------------------");
+        console.log("RESPONSE NeoWs: ", responseNeows);
+        res.json({
+            resApod: responseApod,
+            resNeows: responseNeows
+        });
     } catch (err) {
         console.log(err);
     }
